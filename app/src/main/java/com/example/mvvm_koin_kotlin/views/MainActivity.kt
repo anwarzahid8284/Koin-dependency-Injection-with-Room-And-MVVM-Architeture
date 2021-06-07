@@ -1,5 +1,6 @@
-package com.example.mvvm_koin_kotlin
+package com.example.mvvm_koin_kotlin.views
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -12,26 +13,25 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.mvvm_koin_kotlin.R
+import com.example.mvvm_koin_kotlin.mvvm.MainViewModel
+import com.example.mvvm_koin_kotlin.room.DataModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.add_user.*
 import kotlinx.android.synthetic.main.add_user.cancelBtnID
 import kotlinx.android.synthetic.main.update_user.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainActivity : AppCompatActivity(), DataAdatptar.OnItemClickListener {
+class MainActivity : AppCompatActivity(), DataAdatptar.OnItemClickListener,
+    CoroutineScope by MainScope() {
     private val mainViewModel: MainViewModel by viewModel()
-    private lateinit var userList: MutableList<DataModel>
-    private lateinit var dataAdatptar: DataAdatptar
+    private var dataAdatptar = DataAdatptar()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        userList = ArrayList()
-        dataAdatptar = DataAdatptar(userList, this)
         recyclerViewID.adapter = dataAdatptar
         recyclerViewID.addItemDecoration(
             DividerItemDecoration(
@@ -41,18 +41,13 @@ class MainActivity : AppCompatActivity(), DataAdatptar.OnItemClickListener {
         )
         recyclerViewID.setHasFixedSize(true)
         mainViewModel.getAllUser().observe(this, Observer {
-            if (it.isNotEmpty()) {
-                userList.clear()
-                userList.addAll(it)
-                dataAdatptar.notifyDataSetChanged()
-            } else {
-                userList.clear()
-                dataAdatptar.notifyDataSetChanged()
-
-            }
+            dataAdatptar.addUserList(it)
         })
 
-
+        networkBtnID.setOnClickListener {
+            val intent = Intent(this, NetworkActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -76,7 +71,7 @@ class MainActivity : AppCompatActivity(), DataAdatptar.OnItemClickListener {
             val name = deleteDialog.enterNameID.text.toString().trim()
             val designation = deleteDialog.enterDesignationID.text.toString().trim()
             if (name.isNotEmpty() && designation.isNotEmpty()) {
-                CoroutineScope(Dispatchers.IO).launch {
+                launch(Dispatchers.IO) {
                     mainViewModel.addUser(
                         DataModel(
                             0,
@@ -104,8 +99,12 @@ class MainActivity : AppCompatActivity(), DataAdatptar.OnItemClickListener {
         deleteDialog.updateUserBtnID.setOnClickListener {
             val name = deleteDialog.updateNameID.text.toString().trim()
             val designation = deleteDialog.updateDesignationID.text.toString().trim()
-            CoroutineScope(Dispatchers.IO).launch {
-                mainViewModel.updateUser(id = userList[position].userID,updateName = name,updateDesignation = designation)
+            launch(Dispatchers.IO) {
+                mainViewModel.updateUser(
+                    id = dataAdatptar.dataList[position].userID,
+                    updateName = name,
+                    updateDesignation = designation
+                )
             }
             deleteDialog.dismiss()
         }
@@ -117,12 +116,12 @@ class MainActivity : AppCompatActivity(), DataAdatptar.OnItemClickListener {
     }
 
     private fun deleteUser(position: Int) {
-        CoroutineScope(Dispatchers.IO).launch {
+        launch(Dispatchers.IO) {
             mainViewModel.deleteUser(
                 DataModel(
-                    userID = userList[position].userID,
-                    userName = userList[position].userName,
-                    userDesignation = userList[position].userDesignation
+                    userID = dataAdatptar.dataList[position].userID,
+                    userName = dataAdatptar.dataList[position].userName,
+                    userDesignation = dataAdatptar.dataList[position].userDesignation
                 )
             )
         }
@@ -143,6 +142,12 @@ class MainActivity : AppCompatActivity(), DataAdatptar.OnItemClickListener {
             true
         }
 
+
+    }
+
+    override fun onDestroy() {
+        cancel()
+        super.onDestroy()
     }
 
 }

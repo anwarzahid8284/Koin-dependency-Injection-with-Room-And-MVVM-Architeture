@@ -1,4 +1,4 @@
-package com.example.mvvm_koin_kotlin
+package com.example.mvvm_koin_kotlin.room
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

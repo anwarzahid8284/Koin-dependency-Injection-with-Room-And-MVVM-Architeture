@@ -8,8 +8,8 @@
         android:id="@+id/titleID"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Enter User Details"
         android:layout_marginTop="10dp"
+        android:text="Enter User Details"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,20 +38,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/enterNameID" />
+
     <Button
         android:id="@+id/addUserBtnID"
-        app:layout_constraintStart_toStartOf="@id/enterDesignationID"
-        app:layout_constraintTop_toBottomOf="@id/enterDesignationID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="Add User"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        app:layout_constraintStart_toStartOf="@id/enterDesignationID"
+        app:layout_constraintTop_toBottomOf="@id/enterDesignationID" />
+
     <Button
-        android:layout_width="wrap_content"
         android:id="@+id/cancelBtnID"
-        app:layout_constraintEnd_toEndOf="@id/enterDesignationID"
-        app:layout_constraintTop_toBottomOf="@id/enterDesignationID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="cancel"
-        android:layout_height="wrap_content"/>
+        app:layout_constraintEnd_toEndOf="@id/enterDesignationID"
+        app:layout_constraintTop_toBottomOf="@id/enterDesignationID" />
 </androidx.constraintlayout.widget.ConstraintLayout>

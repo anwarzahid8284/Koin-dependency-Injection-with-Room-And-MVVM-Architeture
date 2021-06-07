@@ -1,4 +1,4 @@
-package com.example.mvvm_koin_kotlin
+package com.example.mvvm_koin_kotlin.views
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,11 +6,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.data_item.view.*
+import com.example.mvvm_koin_kotlin.R
+import com.example.mvvm_koin_kotlin.room.DataModel
 
-class DataAdatptar(private val dataList: List<DataModel>,private val listener:OnItemClickListener) :
+class DataAdatptar :
     RecyclerView.Adapter<DataAdatptar.DataVHolder>() {
-
+     var dataList=ArrayList<DataModel>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DataVHolder {
         val itemView =
             LayoutInflater.from(parent.context).inflate(R.layout.data_item, parent, false)
@@ -29,12 +30,17 @@ class DataAdatptar(private val dataList: List<DataModel>,private val listener:On
             val imageView=itemView.findViewById(R.id.imageViewID) as ImageView
             init {
                 imageView.setOnClickListener {
-                    listener.itemClick(it,adapterPosition)
+                    (itemView.context as MainActivity).itemClick(it,adapterPosition)
                 }
             }
 
     }
     interface OnItemClickListener{
         fun itemClick(view: View,position: Int)
+    }
+    fun addUserList(userList:List<DataModel>){
+        dataList.clear()
+        dataList.addAll(userList)
+        notifyDataSetChanged()
     }
 }
